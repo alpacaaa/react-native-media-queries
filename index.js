@@ -27,7 +27,7 @@ export const createStyles = (base, ...extra) => {
     return {
       ...acc,
       ...merged
-    }
+    };
 
   }, base);
 };

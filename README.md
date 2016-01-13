@@ -12,6 +12,23 @@ This module brings media queries like functionality to React Native styles.
 
 ### Quick Start
 
+If you want to write this:
+
+```css
+// This is of course CSS, don't paste it in your RN app, you fool!
+.logo {
+  height: 200;
+}
+
+@media (max-height: 500px) {
+  .logo {
+    height: 120;
+  }
+}
+```
+
+Write this instead:
+
 ```javascript
 import { createStyles, maxHeight } from 'react-native-media-queries';
 
@@ -33,34 +50,41 @@ const styles = createStyles(
   })
 );
 
-
-// Use styles.logo in your components (same as before)
-<Logo style={styles.logo} />
 ```
+
+Then use `styles` in your components as you're already used to, i.e. `<Logo style={styles.logo} />`.
 
 
 ### API
 
 #### maxHeight(height, styles)  
+Equivalent to `max-height` in CSS.
 Apply `styles` only if screen height is less than or equal `height`.
 
 #### minHeight(height, styles)  
+Equivalent to `min-height` in CSS.
 Apply `styles` only if screen height is greater than or equal `height`.
 
 #### maxWidth(width, styles)  
+Equivalent to `max-width` in CSS.
 Apply `styles` only if screen width is less than or equal `width`.
 
 #### minWidth(width, styles)  
+Equivalent to `min-width` in CSS.
 Apply `styles` only if screen width is greater than or equal `width`.
 
-#### `createStyles(baseStyles, condition1, condition2...)`
-Start from `baseStyles` and apply further matching conditions.
+#### `createStyles(baseStyles, expression1, expression2...)`
+Start from `baseStyles` and apply further matching expressions.
 
 
 
-### Compose conditions
-Conditions are composable meaning you can apply a certain style only
+### Compose expressions
+Expressions are composable meaning you can apply a certain style only
 if the screen height is greater than X AND less than Y (for example).
+
+Basically, if you want something like this
+`@media (min-height: 500px) and (max-height: 1200px)`,
+you'd write this instead:
 
 ```javascript
 const base = {
@@ -72,8 +96,8 @@ const base = {
 const styles = createStyles(
   base,
 
-  // override styles only if screen height is greater than 500 and less than 700
-  minHeight(500, maxHeight(700, {
+  // override styles only if screen height is greater than 500 and less than 1300
+  minHeight(500, maxHeight(1300, {
     logo: {
       height: 120
     }
@@ -82,6 +106,35 @@ const styles = createStyles(
 
 ```
 
+
+And you can have multiple expressions too:
+
+```javascript
+const base = {
+  logo: {
+    height: 200
+  }
+};
+
+const exp1 = {
+  logo: {
+    borderWidth: 5
+  }
+};
+
+const exp2 = {
+  logo: {
+    backgroundColor: '#ddd'
+  }
+};
+
+
+const styles = createStyles(
+  base,
+  minHeight(500, exp1),
+  minWidth(750, exp2)
+);
+```
 
 ### License
 
