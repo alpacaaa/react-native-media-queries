@@ -15,14 +15,14 @@ This module brings media queries like functionality to React Native styles.
 If you want to write this:
 
 ```css
-// This is of course CSS, don't paste it in your RN app, you fool!
+/* This is of course CSS, don't paste it in your RN app, you fool! */
 .logo {
-  height: 200;
+  height: 200px;
 }
 
 @media (max-height: 500px) {
   .logo {
-    height: 120;
+    height: 120px;
   }
 }
 ```
