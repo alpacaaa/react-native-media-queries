@@ -2,7 +2,8 @@
 
 # React Native Media Queries
 
-This module brings media queries like functionality to React Native styles.
+This module brings media queries like functionality to React Native styles.  
+Uses `React.Dimensions.get('window')` to determine width and height of the screen.
 
 
 ### Install
