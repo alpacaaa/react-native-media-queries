@@ -16,8 +16,10 @@ const Dimensions = require('react-native').Dimensions;
 
 
 export const createStyles = (base, ...extra) => {
+  const dimensions = Dimensions.get('window');
+
   return extra.reduce((acc, fn) => {
-    const properties = fn(Dimensions.get('window'));
+    const properties = fn(dimensions);
     const merged = Object.keys(properties).reduce((s_acc, key) =>
       ({
         ...s_acc,
