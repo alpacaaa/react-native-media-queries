@@ -137,6 +137,100 @@ const styles = createStyles(
 );
 ```
 
+
+
+### React (ahahah :/) to screen orientation changes / window resize
+
+As of version `0.1.0` it is possible to update styles whenever the dimensions of the screen change,
+achieving a closer media queries implementation to what is available with CSS on the web.
+
+A function `onLayout` is provided in the object returned from `createStyles()` (eg. `styles.onLayout`).
+You will need to call this function everytime your root component updates its layout, so you'll have to
+bind it to the component's `onLayout` prop. 
+
+
+
+```javascript
+
+class MyComponent {
+  render() {
+    return (
+      <View onLayout={styles.onLayout}>
+        <Text>YO mama</Text>
+      </View>
+    );
+  }
+}
+
+const base = {
+  title: {
+    fontSize: 16
+  }
+};
+
+const biggerFont = {
+  title: {
+    fontSize: 20,
+    backgroundColor: 20,
+  }
+};
+
+
+const styles = createStyles(
+  base,
+  minHeight(500, biggerFont),
+);
+
+```
+
+**NOTE:** This example, as is, **will not work** because React does not re render the interface unless
+the state or the props have been updated. You can force a component to re render (even if it's not encouraged),
+so that this module actually works. It's a bit of a hack but depending on your situation it might be the only
+way to have the styles update on orientation changes / window resize.
+
+Here's how you would use `forceUpdate` to force a re render and make the previous example work:
+
+```javascript
+
+class MyComponent {
+  render() {
+    const forceRender = () => {
+      styles.onLayout();
+      this.forceUpdate();
+    };
+
+    return (
+      <View onLayout={forceRender}>
+        <Text>YO mama</Text>
+      </View>
+    );
+  }
+}
+
+const base = {
+  title: {
+    fontSize: 16
+  }
+};
+
+const biggerFont = {
+  title: {
+    fontSize: 20,
+    backgroundColor: 20,
+  }
+};
+
+
+const styles = createStyles(
+  base,
+  minHeight(500, biggerFont),
+);
+
+```
+
+
+
+
 ### License
 
 
