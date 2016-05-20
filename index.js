@@ -37,7 +37,7 @@ const getStyles = base => {
   let styles = {};
   let computed = {};
 
-  Object.keys(base).map(function (key) {
+  Object.keys(base).map(key => {
     Object.defineProperty(styles, key, {
       get: function () {
         return computed[key];
@@ -45,7 +45,7 @@ const getStyles = base => {
     });
   });
 
-  const update = function(newStyles) {
+  const update = newStyles => {
     computed = newStyles;
   }
 
