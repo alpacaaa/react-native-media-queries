@@ -35,27 +35,34 @@ const computeStyles = (dimensions, base, ...extra) => {
 
 const getStyles = base => {
   let styles = {};
+  let computed = {};
+
   Object.keys(base).map(function (key) {
     Object.defineProperty(styles, key, {
       get: function () {
-        return this.computed[key];
+        return computed[key];
       }
     });
   });
 
-  styles.update = function(newStyles) {
-    this.computed = newStyles;
+  const update = function(newStyles) {
+    computed = newStyles;
   }
 
-  return styles;
+  return { styles, update };
 };
 
 
 export const createStyles = (base, ...extra) => {
-  const styles = getStyles(base);
-  const dimensions = Dimensions.get('window');
-  const computed = computeStyles(dimensions, base, ...extra);
-  styles.update(computed)
+  const { styles, update } = getStyles(base);
+
+  styles.onLayout = () => {
+    const dimensions = Dimensions.get('window');
+    const computed = computeStyles(dimensions, base, ...extra);
+    update(computed);
+  }
+
+  styles.onLayout();
   return styles;
 };
 
