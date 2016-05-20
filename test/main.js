@@ -226,4 +226,41 @@ describe('createStyles', () => {
     });
   });
 
+
+  it('updates styles when `onLayout` is triggered', () => {
+    RNStub.setDimensions(300, 500);
+
+    const base = {
+      someclass: {
+        color: 'blue'
+      },
+      anotherclass: {
+        color: 'green'
+      }
+    };
+
+    const extra = {
+      anotherclass: {
+        color: 'red'
+      }
+    };
+
+
+    const result = createStyles(
+      base,
+      minHeight(600, extra)
+    );
+
+    testStyles(result, base);
+
+    // update window size
+    RNStub.setDimensions(300, 800);
+    result.onLayout();
+
+    testStyles(result, {
+      ...base,
+      ...extra
+    });
+  });
+
 });
