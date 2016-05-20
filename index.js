@@ -15,10 +15,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 const Dimensions = require('react-native').Dimensions;
 
 
-export const createStyles = (base, ...extra) => {
-  const dimensions = Dimensions.get('window');
-
-  return extra.reduce((acc, fn) => {
+const computeStyles = (dimensions, base, ...extra) => {
+  const computed = extra.reduce((acc, fn) => {
     const properties = fn(dimensions);
     const merged = Object.keys(properties).reduce((s_acc, key) =>
       ({
@@ -32,6 +30,21 @@ export const createStyles = (base, ...extra) => {
     };
 
   }, base);
+
+  return Object.keys(base).reduce((acc, key) => {
+    return {
+      ...acc,
+      get [key]() {
+        return computed[key];
+      }
+    };
+  }, {});
+};
+
+
+export const createStyles = (base, ...extra) => {
+  const dimensions = Dimensions.get('window');
+  return computeStyles(dimensions, base, ...extra);
 };
 
 

@@ -42,6 +42,9 @@ describe('createStyles', () => {
     const base = {
       someclass: {
         color: 'blue'
+      },
+      anotherclass: {
+        color: 'green'
       }
     };
 
@@ -153,6 +156,9 @@ describe('createStyles', () => {
     const base = {
       someclass: {
         color: 'blue'
+      },
+      anotherclass: {
+        color: 'green'
       }
     };
 
@@ -189,6 +195,9 @@ describe('createStyles', () => {
     const base = {
       someclass: {
         color: 'blue'
+      },
+      anotherclass: {
+        color: 'green'
       }
     };
 
