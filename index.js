@@ -16,7 +16,7 @@ const Dimensions = require('react-native').Dimensions;
 
 
 const computeStyles = (dimensions, base, ...extra) => {
-  const computed = extra.reduce((acc, fn) => {
+  return extra.reduce((acc, fn) => {
     const properties = fn(dimensions);
     const merged = Object.keys(properties).reduce((s_acc, key) =>
       ({
@@ -30,21 +30,33 @@ const computeStyles = (dimensions, base, ...extra) => {
     };
 
   }, base);
+};
 
-  return Object.keys(base).reduce((acc, key) => {
-    return {
-      ...acc,
-      get [key]() {
-        return computed[key];
+
+const getStyles = base => {
+  let styles = {};
+  Object.keys(base).map(function (key) {
+    Object.defineProperty(styles, key, {
+      get: function () {
+        return this.computed[key];
       }
-    };
-  }, {});
+    });
+  });
+
+  styles.update = function(newStyles) {
+    this.computed = newStyles;
+  }
+
+  return styles;
 };
 
 
 export const createStyles = (base, ...extra) => {
+  const styles = getStyles(base);
   const dimensions = Dimensions.get('window');
-  return computeStyles(dimensions, base, ...extra);
+  const computed = computeStyles(dimensions, base, ...extra);
+  styles.update(computed)
+  return styles;
 };
 
 

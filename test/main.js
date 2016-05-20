@@ -17,6 +17,13 @@ const RNStub = {
 };
 
 
+const testStyles = (actual, expected) => {
+  Object.keys(expected).map(key => {
+    expect(actual).to.have.property(key).and.deep.equal(expected[key])
+  })
+};
+
+
 
 const Index = proxyquire('../index', { 'react-native': RNStub });
 const { createStyles, maxHeight, minHeight } = Index;
@@ -32,7 +39,7 @@ describe('createStyles', () => {
       }
     };
 
-    expect(createStyles(base)).to.deep.equal(base);
+    testStyles(createStyles(base), base);
   });
 
 
@@ -59,7 +66,7 @@ describe('createStyles', () => {
       maxHeight(600, extra)
     );
 
-    expect(result).to.deep.equal({
+    testStyles(result, {
       ...base,
       ...extra
     });
@@ -85,7 +92,7 @@ describe('createStyles', () => {
       })
     );
 
-    expect(result).to.deep.equal(base);
+    testStyles(result, base);
   });
 
 
@@ -111,7 +118,7 @@ describe('createStyles', () => {
       })
     );
 
-    expect(result).to.deep.equal({
+    testStyles(result, {
       someclass: {
         color: 'blue',
         fontSize: 12
@@ -119,7 +126,7 @@ describe('createStyles', () => {
       anotherclass: {
         color: 'red'
       }
-    })
+    });
   });
 
 
@@ -142,11 +149,11 @@ describe('createStyles', () => {
       })
     );
 
-    expect(result).to.deep.equal({
+    testStyles(result, {
       someclass: {
         color: 'red'
       }
-    })
+    });
   });
 
 
@@ -181,7 +188,7 @@ describe('createStyles', () => {
       maxHeight(200, invalid)
     );
 
-    expect(result).to.deep.equal({
+    testStyles(result, {
       ...base,
       ...valid
     });
@@ -213,7 +220,7 @@ describe('createStyles', () => {
       minHeight(400, maxHeight(600, extra))
     );
 
-    expect(result).to.deep.equal({
+    testStyles(result, {
       ...base,
       ...extra
     });
