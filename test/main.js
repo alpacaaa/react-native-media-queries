@@ -24,6 +24,45 @@ const testStyles = (actual, expected) => {
 };
 
 
+const layoutUpdateTest = fn => {
+  RNStub.setDimensions(300, 500);
+
+  const base = {
+    someclass: {
+      color: 'blue'
+    },
+    anotherclass: {
+      color: 'green'
+    }
+  };
+
+  const extra = {
+    anotherclass: {
+      color: 'red'
+    }
+  };
+
+
+  const result = createStyles(
+    base,
+    minHeight(600, extra)
+  );
+
+  testStyles(result, base);
+
+  // update window size
+  RNStub.setDimensions(300, 800);
+  fn(result);
+
+  testStyles(result, {
+    ...base,
+    ...extra
+  });
+
+  return result;
+};
+
+
 
 const Index = proxyquire('../index', { 'react-native': RNStub });
 const { createStyles, maxHeight, minHeight } = Index;
@@ -227,40 +266,29 @@ describe('createStyles', () => {
   });
 
 
-  it('updates styles when `onLayout` is triggered', () => {
-    RNStub.setDimensions(300, 500);
-
-    const base = {
-      someclass: {
-        color: 'blue'
-      },
-      anotherclass: {
-        color: 'green'
-      }
-    };
-
-    const extra = {
-      anotherclass: {
-        color: 'red'
-      }
-    };
-
-
-    const result = createStyles(
-      base,
-      minHeight(600, extra)
-    );
-
-    testStyles(result, base);
-
-    // update window size
-    RNStub.setDimensions(300, 800);
-    result.onLayout();
-
-    testStyles(result, {
-      ...base,
-      ...extra
-    });
+  it('updates styles when `onLayout` is triggered (native event not supplied)', () => {
+    layoutUpdateTest(result => result.onLayout()());
   });
 
+  it('updates styles when `onLayout` is triggered (with native event)', () => {
+    layoutUpdateTest(result => result.onLayout()({
+      nativeEvent: {
+        layout: { width: 300, height: 800 }
+      }
+    }));
+  });
+
+  it('correctly fires the supplied callback when styles update', () => {
+    let called = 0;
+    const callback = () => called++;
+    const styles = layoutUpdateTest(result => result.onLayout(callback)());
+
+    expect(called).to.equal(1);
+
+    // Shouldn't update again
+    RNStub.setDimensions(300, 1000);
+
+    styles.onLayout(callback)();
+    expect(called).to.equal(1);
+  });
 });

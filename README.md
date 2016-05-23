@@ -146,7 +146,7 @@ achieving a closer media queries implementation to what is available with CSS on
 
 A function `onLayout` is provided in the object returned from `createStyles()` (eg. `styles.onLayout`).
 You will need to call this function everytime your root component updates its layout, so you'll have to
-bind it to the component's `onLayout` prop. 
+bind it to the component's `onLayout` prop.
 
 
 
@@ -155,8 +155,8 @@ bind it to the component's `onLayout` prop.
 class MyComponent {
   render() {
     return (
-      <View onLayout={styles.onLayout}>
-        <Text>YO mama</Text>
+      <View onLayout={styles.onLayout()}>
+        <Text style={styles.title}>YO mama</Text>
       </View>
     );
   }
@@ -186,7 +186,8 @@ const styles = createStyles(
 **NOTE:** This example, as is, **will not work** because React does not re render the interface unless
 the state or the props have been updated. You can force a component to re render (even if it's not encouraged),
 so that this module actually works. It's a bit of a hack but depending on your situation it might be the only
-way to have the styles update on orientation changes / window resize.
+way to have the styles update on orientation changes / window resize. You can pass a callback to `onLayout`,
+it will get fired only if the styles have changed.
 
 Here's how you would use `forceUpdate` to force a re render and make the previous example work:
 
@@ -194,14 +195,9 @@ Here's how you would use `forceUpdate` to force a re render and make the previou
 
 class MyComponent {
   render() {
-    const forceRender = () => {
-      styles.onLayout();
-      this.forceUpdate();
-    };
-
     return (
-      <View onLayout={forceRender}>
-        <Text>YO mama</Text>
+      <View onLayout={styles.onLayout(() => this.forceUpdate())}>
+        <Text style={styles.title}>YO mama</Text>
       </View>
     );
   }

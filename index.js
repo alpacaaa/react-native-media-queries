@@ -46,8 +46,13 @@ const getStyles = base => {
   });
 
   const update = newStyles => {
+    if (JSON.stringify(newStyles) === JSON.stringify(computed)) {
+      return false;
+    }
+
     computed = newStyles;
-  }
+    return true;
+  };
 
   return { styles, update };
 };
@@ -56,13 +61,14 @@ const getStyles = base => {
 export const createStyles = (base, ...extra) => {
   const { styles, update } = getStyles(base);
 
-  styles.onLayout = () => {
-    const dimensions = Dimensions.get('window');
+  styles.onLayout = fn => event => {
+    const dimensions = event ? event.nativeEvent.layout : Dimensions.get('window');
     const computed = computeStyles(dimensions, base, ...extra);
-    update(computed);
-  }
+    const changed  = update(computed);
+    if (changed && fn) fn();
+  };
 
-  styles.onLayout();
+  styles.onLayout()();
   return styles;
 };
 
@@ -70,7 +76,7 @@ export const createStyles = (base, ...extra) => {
 const createQueryFn = (test) => (target, styles) => (dimensions) => {
   if (!test(target, dimensions)) return {};
 
-  return typeof styles == 'function' ? styles(dimensions) : styles;
+  return typeof styles === 'function' ? styles(dimensions) : styles;
 };
 
 export const maxHeight = createQueryFn((target, { height }) => target >= height);
