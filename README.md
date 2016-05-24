@@ -3,7 +3,8 @@
 # React Native Media Queries
 
 This module brings media queries like functionality to React Native styles.  
-Uses `React.Dimensions.get('window')` to determine width and height of the screen.
+Uses `React.Dimensions.get('window')` (or the `nativeEvent` data when bound to `onLayout`) 
+to determine width and height of the screen.
 
 
 ### Install
@@ -224,6 +225,13 @@ const styles = createStyles(
 
 ```
 
+
+
+### Changelog
+
+#### 0.1.0
+Introduce `onLayout` callback and reactive updates to window size changes.  
+Thanks to [Quincy Mitchell](http://twitter.com/quincymitch) for providing feedback and testing on Windows :)
 
 
 
