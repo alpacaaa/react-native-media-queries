@@ -2,7 +2,7 @@
   "name": "react-native-media-queries",
   "description": "Media queries like functionality for React Native",
   "author": "Marco Sampellegrini <babbonatale@alpacaaa.net>",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "main": "index.js",
   "scripts": {
     "test": "NODE_ENV=test ./node_modules/.bin/mocha --compilers js:babel-core/register ./test"
