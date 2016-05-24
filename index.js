@@ -15,9 +15,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 const Dimensions = require('react-native').Dimensions;
 
 
-export const createStyles = (base, ...extra) => {
-  const dimensions = Dimensions.get('window');
-
+const computeStyles = (dimensions, base, ...extra) => {
   return extra.reduce((acc, fn) => {
     const properties = fn(dimensions);
     const merged = Object.keys(properties).reduce((s_acc, key) =>
@@ -35,10 +33,50 @@ export const createStyles = (base, ...extra) => {
 };
 
 
+const getStyles = base => {
+  let styles = {};
+  let computed = {};
+
+  Object.keys(base).map(key => {
+    Object.defineProperty(styles, key, {
+      get: function () {
+        return computed[key];
+      }
+    });
+  });
+
+  const update = newStyles => {
+    if (JSON.stringify(newStyles) === JSON.stringify(computed)) {
+      return false;
+    }
+
+    computed = newStyles;
+    return true;
+  };
+
+  return { styles, update };
+};
+
+
+export const createStyles = (base, ...extra) => {
+  const { styles, update } = getStyles(base);
+
+  styles.onLayout = fn => event => {
+    const dimensions = event ? event.nativeEvent.layout : Dimensions.get('window');
+    const computed = computeStyles(dimensions, base, ...extra);
+    const changed  = update(computed);
+    if (changed && fn) fn();
+  };
+
+  styles.onLayout()();
+  return styles;
+};
+
+
 const createQueryFn = (test) => (target, styles) => (dimensions) => {
   if (!test(target, dimensions)) return {};
 
-  return typeof styles == 'function' ? styles(dimensions) : styles;
+  return typeof styles === 'function' ? styles(dimensions) : styles;
 };
 
 export const maxHeight = createQueryFn((target, { height }) => target >= height);

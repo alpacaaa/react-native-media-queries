@@ -17,6 +17,52 @@ const RNStub = {
 };
 
 
+const testStyles = (actual, expected) => {
+  Object.keys(expected).map(key => {
+    expect(actual).to.have.property(key).and.deep.equal(expected[key])
+  })
+};
+
+
+const layoutUpdateTest = fn => {
+  RNStub.setDimensions(300, 500);
+
+  const base = {
+    someclass: {
+      color: 'blue'
+    },
+    anotherclass: {
+      color: 'green'
+    }
+  };
+
+  const extra = {
+    anotherclass: {
+      color: 'red'
+    }
+  };
+
+
+  const result = createStyles(
+    base,
+    minHeight(600, extra)
+  );
+
+  testStyles(result, base);
+
+  // update window size
+  RNStub.setDimensions(300, 800);
+  fn(result);
+
+  testStyles(result, {
+    ...base,
+    ...extra
+  });
+
+  return result;
+};
+
+
 
 const Index = proxyquire('../index', { 'react-native': RNStub });
 const { createStyles, maxHeight, minHeight } = Index;
@@ -32,7 +78,7 @@ describe('createStyles', () => {
       }
     };
 
-    expect(createStyles(base)).to.deep.equal(base);
+    testStyles(createStyles(base), base);
   });
 
 
@@ -42,6 +88,9 @@ describe('createStyles', () => {
     const base = {
       someclass: {
         color: 'blue'
+      },
+      anotherclass: {
+        color: 'green'
       }
     };
 
@@ -56,7 +105,7 @@ describe('createStyles', () => {
       maxHeight(600, extra)
     );
 
-    expect(result).to.deep.equal({
+    testStyles(result, {
       ...base,
       ...extra
     });
@@ -82,7 +131,7 @@ describe('createStyles', () => {
       })
     );
 
-    expect(result).to.deep.equal(base);
+    testStyles(result, base);
   });
 
 
@@ -108,7 +157,7 @@ describe('createStyles', () => {
       })
     );
 
-    expect(result).to.deep.equal({
+    testStyles(result, {
       someclass: {
         color: 'blue',
         fontSize: 12
@@ -116,7 +165,7 @@ describe('createStyles', () => {
       anotherclass: {
         color: 'red'
       }
-    })
+    });
   });
 
 
@@ -139,11 +188,11 @@ describe('createStyles', () => {
       })
     );
 
-    expect(result).to.deep.equal({
+    testStyles(result, {
       someclass: {
         color: 'red'
       }
-    })
+    });
   });
 
 
@@ -153,6 +202,9 @@ describe('createStyles', () => {
     const base = {
       someclass: {
         color: 'blue'
+      },
+      anotherclass: {
+        color: 'green'
       }
     };
 
@@ -175,7 +227,7 @@ describe('createStyles', () => {
       maxHeight(200, invalid)
     );
 
-    expect(result).to.deep.equal({
+    testStyles(result, {
       ...base,
       ...valid
     });
@@ -189,6 +241,9 @@ describe('createStyles', () => {
     const base = {
       someclass: {
         color: 'blue'
+      },
+      anotherclass: {
+        color: 'green'
       }
     };
 
@@ -204,10 +259,36 @@ describe('createStyles', () => {
       minHeight(400, maxHeight(600, extra))
     );
 
-    expect(result).to.deep.equal({
+    testStyles(result, {
       ...base,
       ...extra
     });
   });
 
+
+  it('updates styles when `onLayout` is triggered (native event not supplied)', () => {
+    layoutUpdateTest(result => result.onLayout()());
+  });
+
+  it('updates styles when `onLayout` is triggered (with native event)', () => {
+    layoutUpdateTest(result => result.onLayout()({
+      nativeEvent: {
+        layout: { width: 300, height: 800 }
+      }
+    }));
+  });
+
+  it('correctly fires the supplied callback when styles update', () => {
+    let called = 0;
+    const callback = () => called++;
+    const styles = layoutUpdateTest(result => result.onLayout(callback)());
+
+    expect(called).to.equal(1);
+
+    // Shouldn't update again
+    RNStub.setDimensions(300, 1000);
+
+    styles.onLayout(callback)();
+    expect(called).to.equal(1);
+  });
 });

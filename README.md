@@ -3,7 +3,8 @@
 # React Native Media Queries
 
 This module brings media queries like functionality to React Native styles.  
-Uses `React.Dimensions.get('window')` to determine width and height of the screen.
+Uses `React.Dimensions.get('window')` (or the `nativeEvent` data when bound to `onLayout`) 
+to determine width and height of the screen.
 
 
 ### Install
@@ -136,6 +137,103 @@ const styles = createStyles(
   minWidth(750, exp2)
 );
 ```
+
+
+
+### React (ahahah :/) to screen orientation changes / window resize
+
+As of version `0.1.0` it is possible to update styles whenever the dimensions of the screen change,
+achieving a closer media queries implementation to what is available with CSS on the web.
+
+A function `onLayout` is provided in the object returned from `createStyles()` (eg. `styles.onLayout`).
+You will need to call this function everytime your root component updates its layout, so you'll have to
+bind it to the component's `onLayout` prop.
+
+
+
+```javascript
+
+class MyComponent {
+  render() {
+    return (
+      <View onLayout={styles.onLayout()}>
+        <Text style={styles.title}>YO mama</Text>
+      </View>
+    );
+  }
+}
+
+const base = {
+  title: {
+    fontSize: 16
+  }
+};
+
+const biggerFont = {
+  title: {
+    fontSize: 20,
+    backgroundColor: 20,
+  }
+};
+
+
+const styles = createStyles(
+  base,
+  minHeight(500, biggerFont),
+);
+
+```
+
+**NOTE:** This example, as is, **will not work** because React does not re render the interface unless
+the state or the props have been updated. You can force a component to re render (even if it's not encouraged),
+so that this module actually works. It's a bit of a hack but depending on your situation it might be the only
+way to have the styles update on orientation changes / window resize. You can pass a callback to `onLayout`,
+it will get fired only if the styles have changed.
+
+Here's how you would use `forceUpdate` to force a re render and make the previous example work:
+
+```javascript
+
+class MyComponent {
+  render() {
+    return (
+      <View onLayout={styles.onLayout(() => this.forceUpdate())}>
+        <Text style={styles.title}>YO mama</Text>
+      </View>
+    );
+  }
+}
+
+const base = {
+  title: {
+    fontSize: 16
+  }
+};
+
+const biggerFont = {
+  title: {
+    fontSize: 20,
+    backgroundColor: 20,
+  }
+};
+
+
+const styles = createStyles(
+  base,
+  minHeight(500, biggerFont),
+);
+
+```
+
+
+
+### Changelog
+
+#### 0.1.0
+Introduce `onLayout` callback and reactive updates to window size changes.  
+Thanks to [Quincy Mitchell](http://twitter.com/quincymitch) for providing feedback and testing on Windows :)
+
+
 
 ### License
 
