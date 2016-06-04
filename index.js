@@ -62,7 +62,7 @@ export const createStyles = (base, ...extra) => {
   const { styles, update } = getStyles(base);
 
   styles.onLayout = fn => event => {
-    const dimensions = event ? event.nativeEvent.layout : Dimensions.get('window');
+    const dimensions = Dimensions.get('window');
     const computed = computeStyles(dimensions, base, ...extra);
     const changed  = update(computed);
     if (changed && fn) fn();
