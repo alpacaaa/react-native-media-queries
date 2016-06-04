@@ -84,3 +84,13 @@ export const minHeight = createQueryFn((target, { height }) => target <= height)
 
 export const maxWidth = createQueryFn((target, { width }) => target >= width);
 export const minWidth = createQueryFn((target, { width }) => target <= width);
+
+
+const aspectRatioRound = value => value.toFixed(2);
+const aspectRatioQuery = fn => createQueryFn((target, { width, height }) => {
+  return fn(aspectRatioRound(target), aspectRatioRound(width / height));
+});
+
+export const maxAspectRatio = aspectRatioQuery((target, aspectRatio) => target >= aspectRatio);
+export const minAspectRatio = aspectRatioQuery((target, aspectRatio) => target <= aspectRatio);
+export const aspectRatio = aspectRatioQuery((target, aspectRatio) => target == aspectRatio);

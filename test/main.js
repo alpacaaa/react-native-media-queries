@@ -65,7 +65,12 @@ const layoutUpdateTest = fn => {
 
 
 const Index = proxyquire('../index', { 'react-native': RNStub });
-const { createStyles, maxHeight, minHeight } = Index;
+const {
+  createStyles,
+  maxHeight,
+  minHeight,
+  minAspectRatio,
+} = Index;
 
 
 
@@ -290,5 +295,38 @@ describe('createStyles', () => {
 
     styles.onLayout(callback)();
     expect(called).to.equal(1);
+  });
+
+
+  it('works with aspect-ratio queries', () => {
+    RNStub.setDimensions(1334, 750); // 16 : 9
+
+    const base = {
+      someclass: {
+        color: 'blue'
+      },
+      anotherclass: {
+        color: 'red'
+      }
+    };
+
+    const result = createStyles(
+      base,
+      minAspectRatio(16 / 9, {
+        someclass: {
+          fontSize: 12
+        }
+      })
+    );
+
+    testStyles(result, {
+      someclass: {
+        color: 'blue',
+        fontSize: 12
+      },
+      anotherclass: {
+        color: 'red'
+      }
+    });
   });
 });
