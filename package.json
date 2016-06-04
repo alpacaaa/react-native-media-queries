@@ -5,7 +5,9 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha --compilers js:babel-core/register ./test"
+    "prepublish": "npm run compile",
+    "compile": "NODE_ENV=build ./node_modules/.bin/babel index.js -o compiled.js",
+    "test": "NODE_ENV=build ./node_modules/.bin/mocha --compilers js:babel-core/register ./test"
   },
   "repository": {
     "type": "git",
@@ -14,6 +16,7 @@
   "license": "MIT",
   "devDependencies": {
     "babel": "^6.3.26",
+    "babel-cli": "^6.9.0",
     "babel-core": "^6.4.0",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-stage-2": "^6.3.13",
@@ -23,7 +26,7 @@
   },
   "babel": {
     "env": {
-      "test": {
+      "build": {
         "presets": [
           "es2015",
           "stage-2"
