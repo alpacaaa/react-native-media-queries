@@ -3,7 +3,7 @@
 # React Native Media Queries
 
 This module brings media queries like functionality to React Native styles.  
-Uses `React.Dimensions.get('window')` (or the `nativeEvent` data when bound to `onLayout`) 
+Uses `React.Dimensions.get('window')` (or the `nativeEvent` data when bound to `onLayout`)
 to determine width and height of the screen.
 
 
@@ -74,6 +74,19 @@ Apply `styles` only if screen width is less than or equal `width`.
 #### minWidth(width, styles)  
 Equivalent to `min-width` in CSS.
 Apply `styles` only if screen width is greater than or equal `width`.
+
+#### aspectRatio(ratio, styles)
+Equivalent to `aspect-ratio` in CSS.
+Apply `styles` only if the aspect ratio of the screen is the same as the ratio provided.  
+*Note*: Ratio must be in the form `16/9`.
+
+#### maxAspectRatio(ratio, styles)
+Equivalent to `max-aspect-ratio` in CSS.
+Apply `styles` only if the aspect ratio of the screen is less or equal than the ratio provided.
+
+#### minAspectRatio(ratio, styles)
+Equivalent to `min-aspect-ratio` in CSS.
+Apply `styles` only if the aspect ratio of the screen is greater or equal than the ratio provided.
 
 #### `createStyles(baseStyles, expression1, expression2...)`
 Start from `baseStyles` and apply further matching expressions.
@@ -228,6 +241,9 @@ const styles = createStyles(
 
 
 ### Changelog
+
+#### 0.3.0
+Introduce `aspectRatio` queries.
 
 #### 0.1.0
 Introduce `onLayout` callback and reactive updates to window size changes.  
